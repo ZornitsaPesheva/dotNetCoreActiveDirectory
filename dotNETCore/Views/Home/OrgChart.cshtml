@@ -83,12 +83,13 @@
                 nodes: n
             });
 
+
             function resetPasswordHandler(nodeId) {
                 var data = chart.get(nodeId);
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("ResetPassword")", { samAccountName: samAccountName })
                     .done(function () {
-                        alert("Password has been changed!")
+                        location.reload();
                     })
             }
 
@@ -112,8 +113,9 @@
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("DisableAccount")", { samAccountName: samAccountName })
                     .done(function () {
-                        sender.removeNode(nodeId);
+                        location.reload();
                     })
+                return false;
             });
 
 
