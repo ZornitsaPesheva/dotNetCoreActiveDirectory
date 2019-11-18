@@ -63,3 +63,6 @@ html, body {
     opacity: 0.5;
 }
 
+.edit-assistant-button-content {
+    display: none;
+}
