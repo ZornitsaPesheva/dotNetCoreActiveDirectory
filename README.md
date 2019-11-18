@@ -12,6 +12,135 @@ There are two namespaces to communicate Active Directory with C#:
 You need ot install it using the command shown here: 
 https://www.nuget.org/packages/System.DirectoryServices.AccountManagement/4.7.0-preview2.19523.17
 
+- Add class called **User**
+```
+using System.ComponentModel.DataAnnotations;
+
+namespace dotNETCore.Models
+{
+    public class User
+    {
+        public int Id { get; set; }
+        [Display(Name = "Display Name")]
+        public string DisplayName { get; set; }
+        public string SamAccountName { get; set; }
+        public string Manager { get; set; }
+        public int Pid { get; set; }
+        public string Image { get; set; }
+        public string JobTitle { get; set; }
+        public string Company { get; set; }
+        public string Phone { get; set; }
+        public string Disabled { get; set; }
+    }
+}
+```
+- Add class called **UserPrincipalEx** for extending UserPrincipal class in oreder to be able to get more AD sttributes
+```
+using System.DirectoryServices.AccountManagement;
+
+namespace dotNETCore.Models
+{
+    [DirectoryRdnPrefix("CN")]
+    [DirectoryObjectClass("Person")]
+    public class UserPrincipalEx : UserPrincipal
+    {
+        // Inplement the constructor using the base class constructor. 
+        public UserPrincipalEx(PrincipalContext context) : base(context)
+        { }
+
+        // Implement the constructor with initialization parameters.    
+        public UserPrincipalEx(PrincipalContext context,
+                             string samAccountName,
+                             string password,
+                             bool enabled) : base(context, samAccountName, password, enabled)
+        { }
+
+        // Create the "Manager" property.    
+        [DirectoryProperty("manager")]
+        public string Manager
+        {
+            get
+            {
+                if (ExtensionGet("manager").Length != 1)
+                    return string.Empty;
+
+                return (string)ExtensionGet("manager")[0];
+            }
+            set { ExtensionSet("manager", value); }
+        }
+
+        [DirectoryProperty("company")]
+        public string Company
+        {
+            get
+            {
+                if (ExtensionGet("company").Length != 1)
+                    return string.Empty;
+
+                return (string)ExtensionGet("company")[0];
+            }
+            set { ExtensionSet("company", value); }
+        }
+
+        [DirectoryProperty("telephoneNumber")]
+        public string TelephoneNumber
+        {
+            get
+            {
+                if (ExtensionGet("telephoneNumber").Length != 1)
+                    return string.Empty;
+
+                return (string)ExtensionGet("telephoneNumber")[0];
+            }
+            set { ExtensionSet("telephoneNumber", value); }
+        }
+
+        [DirectoryProperty("title")]
+        public string Title
+        {
+            get
+            {
+                if (ExtensionGet("title").Length != 1)
+                    return string.Empty;
+
+                return (string)ExtensionGet("title")[0];
+            }
+            set { ExtensionSet("title", value); }
+        }
+
+        [DirectoryProperty("thumbnailPhoto")]
+        public byte[] ThumbnailPhoto
+        {
+            get
+            {
+                if (ExtensionGet("thumbnailPhoto").Length != 1)
+                    return null;
+
+                return (byte[])ExtensionGet("thumbnailPhoto")[0];
+            }
+            set
+            {
+                ExtensionSet("thumbnailPhoto", value);
+            }
+        }
+
+        // Implement the overloaded search method FindByIdentity.
+        public static new UserPrincipalEx FindByIdentity(PrincipalContext context, string identityValue)
+        {
+            return (UserPrincipalEx)FindByIdentityWithType(context, typeof(UserPrincipalEx), identityValue);
+        }
+
+        // Implement the overloaded search method FindByIdentity. 
+        public static new UserPrincipalEx FindByIdentity(PrincipalContext context, IdentityType identityType, string identityValue)
+        {
+            return (UserPrincipalEx)FindByIdentityWithType(context, typeof(UserPrincipalEx), identityType, identityValue);
+        }
+    }
+}
+```
+
+
+
 - Add Action called **OrgChart** in your **HomeController**:
 ```
 public ActionResult OrgChart()
@@ -43,6 +172,7 @@ public ActionResult OrgChart()
     {
     <script>
         window.onload = function () {
+        
             // This is the Icon for the reset password menu option:
             var ResetPasswordIcon = '<svg width="24" height="24" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
                 'viewBox="0 0 300 400" style="enable-background:new 0 0 512.012 512.012;" xml:space="preserve">' +
@@ -147,3 +277,5 @@ public ActionResult OrgChart()
     </script>
 }
 ```
+
+- Then add these methods in 
