@@ -95,17 +95,21 @@
 
 
             chart.editUI.on('field', function (sender, args) {
+            //    debugger
                 if (args.name == 'displayName' || args.name == 'samAccountName' ||
                     args.name == 'manager' || args.name == 'image' ||
-                    args.name == 'Add new field' || args.name == 'disabled') {
+                    args.name == 'Add new field' || args.name == 'disabled' ||
+                    args.name == 'isAassistant') {
+                    console.log(args.name);
                     return false;
+                    
                 }
             });
 
             chart.on('update', function (sender, oldNode, newNode) {
                 $.post("@Url.Action("UpdateUser")", newNode)
                     .done(function () {
-                        sender.UpdateUser(newNode);
+
                     });
             });
 
