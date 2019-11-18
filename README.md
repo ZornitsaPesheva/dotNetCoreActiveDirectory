@@ -6,7 +6,7 @@ You should have some basic knowledge of ASP.NET MVC.
 
 In my case, I use test Active Directory system and run the code on the domain controler. My domain is called **ad.balkangraph.com** and my Organizational Unit is called **TestOU**
 
-There are two namespaces to communicate Active Directory with C#:
+There are two namespaces to communicate with Active Directory using C#:
 **System.DirectoryServices.ActiveDirectory** and
 **System.DirectoryServices.AccountManagement** (this is what I used)
 You need ot install it using the command shown here: 
