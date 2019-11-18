@@ -56,7 +56,7 @@ namespace dotNETCore.Controllers
             userPrin.Company = user.Company;
             userPrin.Save();
 
-           return new EmptyResult();
+            return new EmptyResult();
         }
 
 
@@ -65,9 +65,6 @@ namespace dotNETCore.Controllers
         public static List<User> GetallAdUsers()
         {
             List<User> AdUsers = new List<User>();
-            //MBS.com My Domain Controller which i created 
-            //OU=DevOU --Organizational Unit which i created 
-            //and create users and groups inside it 
 
   
 
@@ -167,8 +164,6 @@ namespace dotNETCore.Controllers
             user.ExpirePasswordNow();
             user.Save();
           
-            //return new EmptyResult();
-
             return RedirectToAction("OrgChart");
         }
 
