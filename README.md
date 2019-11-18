@@ -446,6 +446,38 @@ public EmptyResult UpdateUser(User user)
 
     <environment include="Development"> ...
 ```
- 
+ - Add to **site.css**:
+ ```
+ html, body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    font-family: Helvetica;
+
+}
+
+#tree {
+    width: 100%;
+    height: 100%;
+}
+
+
+.node.disabled rect {
+    /*fill: #F57C00*/
+    opacity: 0.5;
+    
+}
+
+.node.disabled image {
+    /*fill: #F57C00*/
+    opacity: 0.5;
+}
+
+.edit-assistant-button-content {
+    display: none;
+}
+```
  
 Now you can start the project.
