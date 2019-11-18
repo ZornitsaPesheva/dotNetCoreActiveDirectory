@@ -12,7 +12,7 @@ There are two namespaces to communicate Active Directory with C#:
 You need ot install it using the command shown here: 
 https://www.nuget.org/packages/System.DirectoryServices.AccountManagement/4.7.0-preview2.19523.17
 
-- Add Action called OrgChart in your Controller:
+- Add Action called **OrgChart** in your Controller:
 ```
 public ActionResult OrgChart()
 {
