@@ -429,6 +429,8 @@ public EmptyResult UpdateUser(User user)
 }
 
 ```
-
-
+- In Startup.cs edit:
+```
+ template: "{controller=Home}/{action=OrgChart}/{id?}");
+ ```
 
