@@ -53,9 +53,6 @@
                 var node = n[i];
                 if (node.disabled == "disabled")
                     node.tags = ["disabled"];
-
-                if (node.jobTitle == "Sales")
-                    node.tags = ["Sales"];
             }
 
 
@@ -77,21 +74,25 @@
                     edit: { text: "Edit" },
                     remove: { text: "Disable Account" },
 
-
-
                 },
                 nodes: n
             });
 
 
-            function resetPasswordHandler(nodeId) {
+           function resetPasswordHandler(nodeId) {
                 var data = chart.get(nodeId);
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("ResetPassword")", { samAccountName: samAccountName })
                     .done(function () {
-                        location.reload();
-                    })
+                        
+                   })
+
+    
+               chart.removeNodeTag(nodeId, "disabled");
+               chart.draw();
+
             }
+
 
             chart.editUI.on('field', function (sender, args) {
                 if (args.name == 'displayName' || args.name == 'samAccountName' ||
@@ -109,12 +110,13 @@
             });
 
             chart.on('remove', function (sender, nodeId) {
-                var data = chart.get(nodeId);
+                var data = chart._get(nodeId);
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("DisableAccount")", { samAccountName: samAccountName })
                     .done(function () {
-                        location.reload();
                     })
+                data.tags = ["disabled"];
+                sender.draw();
                 return false;
             });
 
