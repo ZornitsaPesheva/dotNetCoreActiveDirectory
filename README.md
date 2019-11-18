@@ -260,7 +260,7 @@ public ActionResult OrgChart()
             chart.on('update', function (sender, oldNode, newNode) {
                 $.post("@Url.Action("UpdateUser")", newNode)
                     .done(function () {
-                        sender.UpdateUser(newNode);
+
                     });
             });
 
