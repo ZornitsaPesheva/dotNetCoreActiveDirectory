@@ -200,16 +200,13 @@ public ActionResult OrgChart()
 
 
 
-            var n = @Html.Raw(Json.Serialize(Model));
+          var n = @Html.Raw(Json.Serialize(Model));
 
             for (var i = 0; i < n.length; i++) {
    
                 var node = n[i];
                 if (node.disabled == "disabled")
                     node.tags = ["disabled"];
-
-                if (node.jobTitle == "Sales")
-                    node.tags = ["Sales"];
             }
 
 
@@ -238,14 +235,19 @@ public ActionResult OrgChart()
             });
 
 
-            function resetPasswordHandler(nodeId) {
+           function resetPasswordHandler(nodeId) {
                 var data = chart.get(nodeId);
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("ResetPassword")", { samAccountName: samAccountName })
                     .done(function () {
-                        location.reload();
-                    })
+                        
+                   })
+    
+               chart.removeNodeTag(nodeId, "disabled");
+               chart.draw();
+
             }
+
 
             chart.editUI.on('field', function (sender, args) {
                 if (args.name == 'displayName' || args.name == 'samAccountName' ||
@@ -263,12 +265,13 @@ public ActionResult OrgChart()
             });
 
             chart.on('remove', function (sender, nodeId) {
-                var data = chart.get(nodeId);
+                var data = chart._get(nodeId);
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("DisableAccount")", { samAccountName: samAccountName })
                     .done(function () {
-                        location.reload();
                     })
+                data.tags = ["disabled"];
+                sender.draw();
                 return false;
             });
 
