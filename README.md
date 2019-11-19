@@ -206,6 +206,13 @@ public ActionResult OrgChart()
                 'c0,0.372,0.206,0.713,0.535,0.886c0.146,0.076,0.306,0.114,0.465,0.114c0.199,0,0.397-0.06,0.568-0.177l29-20' +
                 'c0.271-0.187,0.432-0.494,0.432-0.823S36.338,20.363,36.068,20.176z"/>';
 
+              // Disable account Icon:
+            var StopIcon = '<svg width="24" height="24" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
+	            'viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">' +
+                '<path fill="#757575" d="M256,0C114.833,0,0,114.844,0,256s114.833,256,256,256s256-114.844,256-256S397.167,0,256,0z M362.667,352' +
+			    'c0,5.896-4.771,10.667-10.667,10.667H160c-5.896,0-10.667-4.771-10.667-10.667V160c0-5.896,4.771-10.667,10.667-10.667h192' +
+			    'c5.896,0,10.667,4.771,10.667,10.667V352z"/></svg>'
+
             var n = @Html.Raw(Json.Serialize(Model));
 
             for (var i = 0; i < n.length; i++) {
@@ -233,10 +240,13 @@ public ActionResult OrgChart()
                     },
                     edit: { text: "Edit" },
                     
-                    remove: { text: "Disable Account" },
+                    remove: {
+                        text: "Disable Account",
+                        icon: StopIcon,
+                    },
 
                     enable: {
-                        text: "Enable user",
+                        text: "Enable account",
                         icon: EnableIcon,
                         onClick: enableUserHandler
                     }
@@ -244,7 +254,6 @@ public ActionResult OrgChart()
                 },
                 nodes: n
             });
-
 
            function resetPasswordHandler(nodeId) {
                 var data = chart.get(nodeId);
