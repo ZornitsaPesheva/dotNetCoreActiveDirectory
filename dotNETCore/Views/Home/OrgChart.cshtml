@@ -1,5 +1,4 @@
-﻿
-@model IEnumerable<dotNETCore.Models.User>
+﻿@model IEnumerable<dotNETCore.Models.User>
 @{
     ViewBag.Title = "OrgChart";
 }
@@ -18,8 +17,7 @@
     {
     <script>
         window.onload = function () {
-
-            // This is the Icon for the reset password menu option:
+         // This is the Icon for the reset password menu option:
             var ResetPasswordIcon = '<svg width="24" height="24" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
                 'viewBox="0 0 500 400" style="enable-background:new 0 0 512.012 512.012;" xml:space="preserve">' +
                 '<path fill="#757575" d="M404.998,298.657c-0.107,0-0.213,0-0.32,0c-17.365,0-32.683-5.76-43.136-16.213L231.003,151.905' +
@@ -61,7 +59,7 @@
             var n = @Html.Raw(Json.Serialize(Model));
 
             for (var i = 0; i < n.length; i++) {
-   
+
                 var node = n[i];
                 if (node.disabled == "disabled")
                     node.tags = ["disabled"];
@@ -84,7 +82,7 @@
                         onClick: resetPasswordHandler
                     },
                     edit: { text: "Edit" },
-                    
+
                     remove: {
                         text: "Disable Account",
                         icon: StopIcon,
@@ -113,9 +111,9 @@
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("ResetPassword")", { samAccountName: samAccountName })
                     .done(function () {
-                        
+
                    })
-  
+
                chart.removeNodeTag(nodeId, "disabled");
                chart.draw();
 
@@ -127,9 +125,9 @@
                 var samAccountName = data.samAccountName;
                 $.post("@Url.Action("EnaableAccount")", { samAccountName: samAccountName })
                     .done(function () {
-                        
+
                    })
-  
+
                chart.removeNodeTag(nodeId, "disabled");
                chart.draw();
 
@@ -143,7 +141,7 @@
                     args.name == 'isAassistant') {
                     console.log(args.name);
                     return false;
-                    
+
                 }
             });
 
@@ -164,6 +162,7 @@
                 sender.draw();
                 return false;
             });
+
 
 
         }
