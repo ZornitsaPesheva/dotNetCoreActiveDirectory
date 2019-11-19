@@ -172,10 +172,9 @@ public ActionResult OrgChart()
     {
     <script>
         window.onload = function () {
-        
-            // This is the Icon for the reset password menu option:
+         // This is the Icon for the reset password menu option:
             var ResetPasswordIcon = '<svg width="24" height="24" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
-                'viewBox="0 0 300 400" style="enable-background:new 0 0 512.012 512.012;" xml:space="preserve">' +
+                'viewBox="0 0 500 400" style="enable-background:new 0 0 512.012 512.012;" xml:space="preserve">' +
                 '<path fill="#757575" d="M404.998,298.657c-0.107,0-0.213,0-0.32,0c-17.365,0-32.683-5.76-43.136-16.213L231.003,151.905' +
                 'c-11.925-11.883-18.368-27.008-17.728-41.451c1.131-26.325-9.899-51.477-33.707-76.864C159.238,11.916,131.675-0.436,105.35,0.012' +
                 'C81.649,0.31,59.057,8.588,39.985,23.969c-2.731,2.176-4.181,5.547-3.947,9.024c0.235,3.477,2.155,6.613,5.163,8.405' +
@@ -196,17 +195,16 @@ public ActionResult OrgChart()
                 'l-56.32-33.771c12.139-6.677,25.408-10.24,39.147-10.411c21.291-0.235,42.112,9.536,58.389,26.859' +
                 'c19.925,21.291,28.8,40.768,27.904,61.333c-0.875,20.416,7.851,41.365,23.979,57.472l130.539,130.539' +
                 'c14.464,14.485,35.136,22.464,58.475,22.464c0.149,0,0.277,0,0.405,0c44.992,0,81.941,34.987,85.077,79.168L432.134,364.193z"/>' +
-                '</svg>'
+                '</svg>';
 
-// This is the "Enable" Icon:
-
+            // This is the "Enable" Icon:
             var EnableIcon = '<svg width="24" height="24"version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
                 'viewBox="0 0 41.999 41.999" style="enable-background:new 0 0 41.999 41.999;" xml:space="preserve">' +
                 '<path fill="#757575" d="M36.068,20.176l-29-20C6.761-0.035,6.363-0.057,6.035,0.114C5.706,0.287,5.5,0.627,5.5,0.999v40' +
                 'c0,0.372,0.206,0.713,0.535,0.886c0.146,0.076,0.306,0.114,0.465,0.114c0.199,0,0.397-0.06,0.568-0.177l29-20' +
                 'c0.271-0.187,0.432-0.494,0.432-0.823S36.338,20.363,36.068,20.176z"/>';
 
-              // Disable account Icon:
+            // Disable account Icon:
             var StopIcon = '<svg width="24" height="24" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
 	            'viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">' +
                 '<path fill="#757575" d="M256,0C114.833,0,0,114.844,0,256s114.833,256,256,256s256-114.844,256-256S397.167,0,256,0z M362.667,352' +
@@ -245,15 +243,23 @@ public ActionResult OrgChart()
                         icon: StopIcon,
                     },
 
-                    enable: {
-                        text: "Enable account",
-                        icon: EnableIcon,
-                        onClick: enableUserHandler
-                    }
 
+                },
+                tags: {
+                    disabled: {
+                        nodeMenu: {
+                            enable: {
+                                text: "Enable account",
+                                icon: EnableIcon,
+                                onClick: enableUserHandler
+                            }
+
+                        }
+                    }
                 },
                 nodes: n
             });
+
 
            function resetPasswordHandler(nodeId) {
                 var data = chart.get(nodeId);
@@ -311,6 +317,7 @@ public ActionResult OrgChart()
                 sender.draw();
                 return false;
             });
+
 
 
         }
