@@ -198,9 +198,15 @@ public ActionResult OrgChart()
                 'c14.464,14.485,35.136,22.464,58.475,22.464c0.149,0,0.277,0,0.405,0c44.992,0,81.941,34.987,85.077,79.168L432.134,364.193z"/>' +
                 '</svg>'
 
+// This is the "Enable" Icon:
 
+            var EnableIcon = '<svg width="24" height="24"version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
+                'viewBox="0 0 41.999 41.999" style="enable-background:new 0 0 41.999 41.999;" xml:space="preserve">' +
+                '<path fill="#757575" d="M36.068,20.176l-29-20C6.761-0.035,6.363-0.057,6.035,0.114C5.706,0.287,5.5,0.627,5.5,0.999v40' +
+                'c0,0.372,0.206,0.713,0.535,0.886c0.146,0.076,0.306,0.114,0.465,0.114c0.199,0,0.397-0.06,0.568-0.177l29-20' +
+                'c0.271-0.187,0.432-0.494,0.432-0.823S36.338,20.363,36.068,20.176z"/>';
 
-          var n = @Html.Raw(Json.Serialize(Model));
+            var n = @Html.Raw(Json.Serialize(Model));
 
             for (var i = 0; i < n.length; i++) {
    
@@ -226,9 +232,14 @@ public ActionResult OrgChart()
                         onClick: resetPasswordHandler
                     },
                     edit: { text: "Edit" },
+                    
                     remove: { text: "Disable Account" },
 
-
+                    enable: {
+                        text: "Enable user",
+                        icon: EnableIcon,
+                        onClick: enableUserHandler
+                    }
 
                 },
                 nodes: n
@@ -242,18 +253,35 @@ public ActionResult OrgChart()
                     .done(function () {
                         
                    })
-    
+  
                chart.removeNodeTag(nodeId, "disabled");
                chart.draw();
 
             }
 
 
+             function enableUserHandler(nodeId) {
+                var data = chart.get(nodeId);
+                var samAccountName = data.samAccountName;
+                $.post("@Url.Action("EnaableAccount")", { samAccountName: samAccountName })
+                    .done(function () {
+                        
+                   })
+  
+               chart.removeNodeTag(nodeId, "disabled");
+               chart.draw();
+
+            }
+
             chart.editUI.on('field', function (sender, args) {
+
                 if (args.name == 'displayName' || args.name == 'samAccountName' ||
                     args.name == 'manager' || args.name == 'image' ||
-                    args.name == 'Add new field' || args.name == 'disabled') {
+                    args.name == 'Add new field' || args.name == 'disabled' ||
+                    args.name == 'isAassistant') {
+                    console.log(args.name);
                     return false;
+                    
                 }
             });
 
@@ -417,19 +445,22 @@ public EmptyResult UpdateUser(User user)
 
             user.Save();
 
-            //return new EmptyResult();
-
             return RedirectToAction("OrgChart");
         }
 
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public ActionResult EnableAccount(string SamAccountName)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            //i get the user by its SamaccountName to change his password
+            PrincipalContext context = new PrincipalContext
+                                       (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+            UserPrincipal user = UserPrincipal.FindByIdentity
+                                 (context, IdentityType.SamAccountName, SamAccountName);
+            user.Enabled = true;
+
+            user.Save();
+
+            return RedirectToAction("OrgChart");
         }
-    }
-}
 
 ```
 - In **Startup.cs** edit:
