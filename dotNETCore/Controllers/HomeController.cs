@@ -178,11 +178,22 @@ namespace dotNETCore.Controllers
 
             user.Save();
 
-            //return new EmptyResult();
-
             return RedirectToAction("OrgChart");
         }
 
+        public ActionResult EnableAccount(string SamAccountName)
+        {
+            //i get the user by its SamaccountName to change his password
+            PrincipalContext context = new PrincipalContext
+                                       (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+            UserPrincipal user = UserPrincipal.FindByIdentity
+                                 (context, IdentityType.SamAccountName, SamAccountName);
+            user.Enabled = true;
+
+            user.Save();
+
+            return RedirectToAction("OrgChart");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
