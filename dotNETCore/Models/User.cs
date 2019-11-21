@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace dotNETCore.Models
+﻿namespace dotNETCore.Models
 {
     public class User
     {
         public string Id { get; set; }
         public string Pid { get; set; }
-        [Display(Name = "Display Name")]
         public string DisplayName { get; set; }
         public string SamAccountName { get; set; }
         public string Manager { get; set; }
