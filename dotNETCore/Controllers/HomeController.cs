@@ -178,8 +178,6 @@ namespace dotNETCore.Controllers
             UserPrincipalEx extpsdf = null;
             foreach (Principal p in results)
             {
-
-
                 UserPrincipalEx extp = UserPrincipalEx.FindByIdentity(ctx, IdentityType.DistinguishedName, p.DistinguishedName);
 
                 if (extp.SamAccountName == name)
@@ -192,53 +190,7 @@ namespace dotNETCore.Controllers
 
             }
 
-                //up.EmailAddress = "emai1l1@gmail.com";
-
-
-                //up.DisplayName = "user name11";
-
-                //up.SetPassword("qaz11!@#WSX123");
-                //up.SamAccountName = ""
-                //up.Enabled = true;
-
-
-
-                //up.SamAccountName = SamAccountName;
-
-
-
-
-
-                // gluposti praq tuka
-
-                //TempData["SamAccountName"] = SamAccountName;
-                //return RedirectToAction("OrgChartGetManager", "User");
-
-
-                //  ViewBag.SamAccountName = SamAccountName;
-
-                //var user = new UserPrincipalEx(ctx);
-
-                //UserPrincipalEx extp = new UserPrincipalEx(ctx);
-
-
-                //extp.Manager = pid;
-                //extp.DisplayName = "username1";
-                //extp.EmailAddress = "emai1l@gmail.com";
-                //extp.SetPassword("qaz1!@#WSX123");
-                //extp.Enabled = true;
-                //extp.SamAccountName = "emai1l";
-                //extp.ExpirePasswordNow();
-
-
-                //extp.Save();
-
-                //extp.Manager = "CN=" + Manager + ",OU=TestOU,DC=ad,DC=balkangraph,DC=com";
-                //extp.DisplayName
-                //extp.Save();
-
-
-                return Json(new { id = extpsdf.DistinguishedName });
+            return Json(new { id = extpsdf.DistinguishedName });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
