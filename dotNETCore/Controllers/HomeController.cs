@@ -36,66 +36,38 @@ namespace dotNETCore.Controllers
             return View();
         }
 
-
-
         public ActionResult OrgChart()
         {
             List<User> ADUsers = GetallAdUsers();
             return View(ADUsers);
         }
 
-        //public ActionResult OrgChartGetManager()
-        //{
-        //    var SamAccountNAme = TempData["SamAccountName"];
-        //    List<User> ADUsers = GetallAdUsers();
-        //    return View("OrgChart", ADUsers);
-        //}
-
         public EmptyResult UpdateUser(User user)
         {
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             UserPrincipalEx userPrin = UserPrincipalEx.FindByIdentity(ctx, IdentityType.DistinguishedName, user.Id);
 
-            if (user.DisplayName != null)
-            {
-                userPrin.DisplayName = user.DisplayName;
-            }
             if (user.SamAccountName != null)
             {
                 userPrin.SamAccountName = user.SamAccountName;
             }
-            if (user.JobTitle != null)
-            {
-                userPrin.Title = user.JobTitle;
-            }
-            if (user.Phone != null)
-            {
-                userPrin.TelephoneNumber = user.Phone;
-            }
-            if (user.Company != null)
-            {
-                userPrin.Company = user.Company;
-            }
-            
+
+            userPrin.DisplayName = user.DisplayName;          
+            userPrin.Title = user.JobTitle;
+            userPrin.TelephoneNumber = user.Phone;
+            userPrin.Company = user.Company;
+
             userPrin.Save();
 
             return new EmptyResult();
         }
-
-
 
         //if you want to get Groups of Specific OU you have to add OU Name in Context        
         public static List<User> GetallAdUsers()
         {
             List<User> AdUsers = new List<User>();
 
-  
-
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-
-
-           
-
 
             UserPrincipal userPrin = new UserPrincipal(ctx);
             userPrin.Name = "*";
@@ -103,32 +75,13 @@ namespace dotNETCore.Controllers
             searcher.QueryFilter = userPrin;
             var results = searcher.FindAll();
 
-            //var id = 0;
-
             foreach (Principal p in results)
             {
-              
                 
                 UserPrincipalEx extp = UserPrincipalEx.FindByIdentity(ctx, IdentityType.DistinguishedName, p.DistinguishedName);
 
-
-
-
-
                 var managerCN = extp.Manager;
-
-               
-
-                string picture = "";
-
-                if (extp.ThumbnailPhoto != null)
-                {
-                    picture = Convert.ToBase64String(extp.ThumbnailPhoto);
-                }
-                
-
                 var mgr = "";
-
                 string[] list = managerCN.Split(',');
 
                 if (managerCN.Length > 0)
@@ -136,9 +89,12 @@ namespace dotNETCore.Controllers
                     mgr = list[0].Substring(3);
                 }
 
-                
+                string picture = "";
 
-                //id++;
+                if (extp.ThumbnailPhoto != null)
+                {
+                    picture = Convert.ToBase64String(extp.ThumbnailPhoto);
+                }
 
                 AdUsers.Add(new User
                 {
@@ -157,21 +113,6 @@ namespace dotNETCore.Controllers
                
             }
 
-
-
-            //foreach (User u in AdUsers)
-            //{
-
-
-            //    var pid = AdUsers.Find(r => r.SamAccountName == u.ManagerCN);
-            //    if (pid != null)
-            //    {
-            //        u.Pid = pid.Id;
-            //    }
-
-            //}
-
-
             return AdUsers;
             
         }
@@ -180,9 +121,8 @@ namespace dotNETCore.Controllers
         {
             //i get the user by its SamaccountName to change his password
             PrincipalContext context = new PrincipalContext
-                                       (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-            UserPrincipal user = UserPrincipal.FindByIdentity
-                                 (context, IdentityType.DistinguishedName, id);
+                (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+            UserPrincipal user = UserPrincipal.FindByIdentity(context, IdentityType.DistinguishedName, id);
             //Enable Account if it is disabled
             user.Enabled = true;
             //Reset User Password
@@ -190,6 +130,7 @@ namespace dotNETCore.Controllers
             user.SetPassword(newPassword);
             //Force user to change password at next logon (optional)
             user.ExpirePasswordNow();
+
             user.Save();
           
             return RedirectToAction("OrgChart");
@@ -199,9 +140,8 @@ namespace dotNETCore.Controllers
         {
             //i get the user by its SamaccountName to change his password
             PrincipalContext context = new PrincipalContext
-                                       (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-            UserPrincipal user = UserPrincipal.FindByIdentity
-                                 (context, IdentityType.DistinguishedName, id);
+                (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+            UserPrincipal user = UserPrincipal.FindByIdentity(context, IdentityType.DistinguishedName, id);
             user.Enabled = false;
 
             user.Save();
@@ -213,9 +153,8 @@ namespace dotNETCore.Controllers
         {
             //i get the user by its SamaccountName to change his password
             PrincipalContext context = new PrincipalContext
-                                       (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-            UserPrincipal user = UserPrincipal.FindByIdentity
-                                 (context, IdentityType.DistinguishedName, id);
+                (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+            UserPrincipal user = UserPrincipal.FindByIdentity(context, IdentityType.DistinguishedName, id);
             user.Enabled = true;
 
             user.Save();
@@ -227,23 +166,14 @@ namespace dotNETCore.Controllers
         public JsonResult AddAccount(string pid, string name)
         {
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-            var up = new UserPrincipal(ctx, name, "QWEqwe123sdaf$g_sg", true);
+            var up = new UserPrincipal(ctx, name, "tempP@ssword", true);
             up.Save();
-
-
-            //var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-
-
-
-
 
             UserPrincipal userPrin = new UserPrincipal(ctx);
             userPrin.Name = "*";
             var searcher = new PrincipalSearcher();
             searcher.QueryFilter = userPrin;
             var results = searcher.FindAll();
-
-            //var id = 0;
 
             UserPrincipalEx extpsdf = null;
             foreach (Principal p in results)

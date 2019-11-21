@@ -66,11 +66,6 @@
             }
 
 
-            debugger;
-
-
-
-
             var chart = new OrgChart(document.getElementById("tree"), {
                 nodeBinding: {
                     field_0: "displayName",
@@ -116,25 +111,20 @@
            function resetPasswordHandler(nodeId) {
                $.post("@Url.Action("ResetPassword")", { id: nodeId })
                     .done(function () {
-
+                        alert("Password has been changed!")
                    })
-
-               chart.removeNodeTag(nodeId, "disabled");
                chart.draw();
-
-            }
+           }
 
 
              function enableUserHandler(nodeId) {
                  $.post("@Url.Action("EnableAccount")", { id: nodeId })
                     .done(function () {
 
-                   })
-
+                 })
                chart.removeNodeTag(nodeId, "disabled");
                chart.draw();
-
-            }
+             }
 
             chart.editUI.on('field', function (sender, args) {
 
@@ -166,18 +156,16 @@
             });
 
             chart.on('add', function (sender, nodeData) {
-                var name = prompt("Name of the new user");
+                var name = prompt("Name of the new user:");
                 console.log("nodeData: " + nodeData);
         
                 $.post("@Url.Action("AddAccount")", { pid: nodeData.pid, name: name })
                     .done(function (result) {
-
                         sender.add({ id: result.id, pid: nodeData.pid });
                         sender.draw(OrgChart.action.update, null, function () {
                             sender.editUI.show(result.id);
                         })
                     });
-
                 return false;
             })
         }
