@@ -15,7 +15,7 @@
 
 @section scripts
     {
-    <script>
+<script>
         window.onload = function () {
          // This is the Icon for the reset password menu option:
             var ResetPasswordIcon = '<svg width="24" height="24" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"' +
@@ -66,6 +66,9 @@
             }
 
 
+            debugger;
+
+
 
 
             var chart = new OrgChart(document.getElementById("tree"), {
@@ -88,8 +91,10 @@
                         icon: StopIcon,
                     },
 
+                    add: { text: "Add New Account" },
 
                 },
+
                 tags: {
                     disabled: {
                         nodeMenu: {
@@ -100,16 +105,16 @@
                             }
 
                         }
-                    }
+                    },
+
                 },
+
                 nodes: n
             });
 
 
            function resetPasswordHandler(nodeId) {
-                var data = chart.get(nodeId);
-                var samAccountName = data.samAccountName;
-                $.post("@Url.Action("ResetPassword")", { samAccountName: samAccountName })
+               $.post("@Url.Action("ResetPassword")", { id: nodeId })
                     .done(function () {
 
                    })
@@ -121,9 +126,7 @@
 
 
              function enableUserHandler(nodeId) {
-                var data = chart.get(nodeId);
-                var samAccountName = data.samAccountName;
-                $.post("@Url.Action("EnableAccount")", { samAccountName: samAccountName })
+                 $.post("@Url.Action("EnableAccount")", { id: nodeId })
                     .done(function () {
 
                    })
@@ -135,11 +138,11 @@
 
             chart.editUI.on('field', function (sender, args) {
 
-                if (args.name == 'displayName' || args.name == 'samAccountName' ||
+                if ((args.name == 'displayName') || args.name == 'samAccountName' ||
                     args.name == 'manager' || args.name == 'image' ||
                     args.name == 'Add new field' || args.name == 'disabled' ||
                     args.name == 'isAassistant') {
-                    console.log(args.name);
+
                     return false;
 
                 }
@@ -154,8 +157,7 @@
 
             chart.on('remove', function (sender, nodeId) {
                 var data = chart._get(nodeId);
-                var samAccountName = data.samAccountName;
-                $.post("@Url.Action("DisableAccount")", { samAccountName: samAccountName })
+                $.post("@Url.Action("DisableAccount")", { id: nodeId})
                     .done(function () {
                     })
                 data.tags = ["disabled"];
@@ -163,8 +165,19 @@
                 return false;
             });
 
+            chart.on('add', function (sender, nodeData) {
+                var name = prompt("Name of the new user");
 
+                $.post("@Url.Action("AddAccount")", { pid: nodeData.pid, name: name })
+                    .done(function (result) {
+                        sender.add({ id: result.id, pid: node.pid });
+                        sender.draw(OrgChart.action.update, null, function () {
+                            sender.editUI.show(result.id);
+                        })
+                    });
 
+                return false;
+            })
         }
-    </script>
+</script>
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using dotNETCore.Models;
 using System.DirectoryServices.AccountManagement;
-
+using Newtonsoft.Json;
 
 namespace dotNETCore.Controllers
 {
@@ -44,16 +44,39 @@ namespace dotNETCore.Controllers
             return View(ADUsers);
         }
 
+        //public ActionResult OrgChartGetManager()
+        //{
+        //    var SamAccountNAme = TempData["SamAccountName"];
+        //    List<User> ADUsers = GetallAdUsers();
+        //    return View("OrgChart", ADUsers);
+        //}
+
         public EmptyResult UpdateUser(User user)
         {
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
-            UserPrincipalEx userPrin = UserPrincipalEx.FindByIdentity(ctx, IdentityType.SamAccountName, user.SamAccountName);
+            UserPrincipalEx userPrin = UserPrincipalEx.FindByIdentity(ctx, IdentityType.DistinguishedName, user.Id);
 
-            userPrin.DisplayName = user.DisplayName;
-            userPrin.SamAccountName = user.SamAccountName;
-            userPrin.Title = user.JobTitle;
-            userPrin.TelephoneNumber = user.Phone;
-            userPrin.Company = user.Company;
+            if (user.DisplayName != null)
+            {
+                userPrin.DisplayName = user.DisplayName;
+            }
+            if (user.SamAccountName != null)
+            {
+                userPrin.SamAccountName = user.SamAccountName;
+            }
+            if (user.JobTitle != null)
+            {
+                userPrin.Title = user.JobTitle;
+            }
+            if (user.Phone != null)
+            {
+                userPrin.TelephoneNumber = user.Phone;
+            }
+            if (user.Company != null)
+            {
+                userPrin.Company = user.Company;
+            }
+            
             userPrin.Save();
 
             return new EmptyResult();
@@ -80,14 +103,18 @@ namespace dotNETCore.Controllers
             searcher.QueryFilter = userPrin;
             var results = searcher.FindAll();
 
-            var id = 0;
+            //var id = 0;
 
             foreach (Principal p in results)
             {
-               
+              
                 
-                UserPrincipalEx extp = UserPrincipalEx.FindByIdentity(ctx, IdentityType.SamAccountName, p.SamAccountName);
-               
+                UserPrincipalEx extp = UserPrincipalEx.FindByIdentity(ctx, IdentityType.DistinguishedName, p.DistinguishedName);
+
+
+
+
+
                 var managerCN = extp.Manager;
 
                
@@ -111,14 +138,15 @@ namespace dotNETCore.Controllers
 
                 
 
-                id++;
+                //id++;
 
                 AdUsers.Add(new User
                 {
 
-                    Id = id,
-                    DisplayName = p.DisplayName,
-                    SamAccountName = p.SamAccountName,
+                    Id = extp.DistinguishedName,                    
+                    Pid = extp.Manager,
+                    DisplayName = extp.DisplayName,
+                    SamAccountName = extp.SamAccountName,
                     Manager = mgr,
                     Image = "data:image/jpeg;base64," + picture,
                     JobTitle = extp.Title,
@@ -131,30 +159,30 @@ namespace dotNETCore.Controllers
 
 
 
-            foreach (User u in AdUsers)
-            {
+            //foreach (User u in AdUsers)
+            //{
 
 
-                var pid = AdUsers.Find(r => r.DisplayName == u.Manager);
-                if (pid != null)
-                {
-                    u.Pid = pid.Id;
-                }
+            //    var pid = AdUsers.Find(r => r.SamAccountName == u.ManagerCN);
+            //    if (pid != null)
+            //    {
+            //        u.Pid = pid.Id;
+            //    }
 
-            }
+            //}
 
 
             return AdUsers;
             
         }
 
-        public ActionResult ResetPassword(string SamAccountName)
+        public ActionResult ResetPassword(string id)
         {
             //i get the user by its SamaccountName to change his password
             PrincipalContext context = new PrincipalContext
                                        (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             UserPrincipal user = UserPrincipal.FindByIdentity
-                                 (context, IdentityType.SamAccountName, SamAccountName);
+                                 (context, IdentityType.DistinguishedName, id);
             //Enable Account if it is disabled
             user.Enabled = true;
             //Reset User Password
@@ -167,13 +195,13 @@ namespace dotNETCore.Controllers
             return RedirectToAction("OrgChart");
         }
 
-        public ActionResult DisableAccount(string SamAccountName)
+        public ActionResult DisableAccount(string id)
         {
             //i get the user by its SamaccountName to change his password
             PrincipalContext context = new PrincipalContext
                                        (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             UserPrincipal user = UserPrincipal.FindByIdentity
-                                 (context, IdentityType.SamAccountName, SamAccountName);
+                                 (context, IdentityType.DistinguishedName, id);
             user.Enabled = false;
 
             user.Save();
@@ -181,18 +209,106 @@ namespace dotNETCore.Controllers
             return RedirectToAction("OrgChart");
         }
 
-        public ActionResult EnableAccount(string SamAccountName)
+        public ActionResult EnableAccount(string id)
         {
             //i get the user by its SamaccountName to change his password
             PrincipalContext context = new PrincipalContext
                                        (ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             UserPrincipal user = UserPrincipal.FindByIdentity
-                                 (context, IdentityType.SamAccountName, SamAccountName);
+                                 (context, IdentityType.DistinguishedName, id);
             user.Enabled = true;
 
             user.Save();
 
             return RedirectToAction("OrgChart");
+        }
+
+
+        public JsonResult AddAccount(string pid, string name)
+        {
+            var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+            var up = new UserPrincipal(ctx, name, "QWEqwe123sdaf$g_sg", true);
+            up.Save();
+
+
+            //var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
+
+
+
+
+
+            UserPrincipal userPrin = new UserPrincipal(ctx);
+            userPrin.Name = "*";
+            var searcher = new PrincipalSearcher();
+            searcher.QueryFilter = userPrin;
+            var results = searcher.FindAll();
+
+            //var id = 0;
+
+            UserPrincipalEx extpsdf = null;
+            foreach (Principal p in results)
+            {
+
+
+                UserPrincipalEx extp = UserPrincipalEx.FindByIdentity(ctx, IdentityType.DistinguishedName, p.DistinguishedName);
+
+                if (extp.SamAccountName == name)
+                {
+                    extp.Manager = pid;
+                    
+                    extp.Save();
+                    extpsdf = extp;
+                }
+
+            }
+
+                //up.EmailAddress = "emai1l1@gmail.com";
+
+
+                //up.DisplayName = "user name11";
+
+                //up.SetPassword("qaz11!@#WSX123");
+                //up.SamAccountName = ""
+                //up.Enabled = true;
+
+
+
+                //up.SamAccountName = SamAccountName;
+
+
+
+
+
+                // gluposti praq tuka
+
+                //TempData["SamAccountName"] = SamAccountName;
+                //return RedirectToAction("OrgChartGetManager", "User");
+
+
+                //  ViewBag.SamAccountName = SamAccountName;
+
+                //var user = new UserPrincipalEx(ctx);
+
+                //UserPrincipalEx extp = new UserPrincipalEx(ctx);
+
+
+                //extp.Manager = pid;
+                //extp.DisplayName = "username1";
+                //extp.EmailAddress = "emai1l@gmail.com";
+                //extp.SetPassword("qaz1!@#WSX123");
+                //extp.Enabled = true;
+                //extp.SamAccountName = "emai1l";
+                //extp.ExpirePasswordNow();
+
+
+                //extp.Save();
+
+                //extp.Manager = "CN=" + Manager + ",OU=TestOU,DC=ad,DC=balkangraph,DC=com";
+                //extp.DisplayName
+                //extp.Save();
+
+
+                return Json(new { id = extpsdf.DistinguishedName });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
