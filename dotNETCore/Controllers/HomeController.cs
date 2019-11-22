@@ -52,7 +52,7 @@ namespace dotNETCore.Controllers
                 userPrin.SamAccountName = user.SamAccountName;
             }
 
-            userPrin.DisplayName = user.DisplayName;          
+          //  userPrin.DisplayName = user.DisplayName;          
             userPrin.Title = user.JobTitle;
             userPrin.TelephoneNumber = user.Phone;
             userPrin.Company = user.Company;
@@ -167,6 +167,7 @@ namespace dotNETCore.Controllers
         {
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             var up = new UserPrincipal(ctx, name, "tempP@ssword", true);
+            up.DisplayName = name;
             up.Save();
 
             UserPrincipal userPrin = new UserPrincipal(ctx);
@@ -185,12 +186,14 @@ namespace dotNETCore.Controllers
                     extp.Manager = pid;
                     
                     extp.Save();
+
                     extpsdf = extp;
+
                 }
 
             }
 
-            return Json(new { id = extpsdf.DistinguishedName });
+            return Json(new { id = extpsdf.DistinguishedName, displayName = extpsdf.DisplayName });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
