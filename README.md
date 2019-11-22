@@ -281,7 +281,7 @@ public ActionResult OrgChart()
 
             chart.editUI.on('field', function (sender, args) {
 
-                if (args.name == 'samAccountName' ||
+                if (args.name == 'displayName' || args.name == 'samAccountName' ||
                     args.name == 'manager' || args.name == 'image' ||
                     args.name == 'Add new field' || args.name == 'disabled' ||
                     args.name == 'isAassistant') {
@@ -309,12 +309,14 @@ public ActionResult OrgChart()
             });
 
             chart.on('add', function (sender, nodeData) {
-                var name = prompt("Name of the new user:");
+                var fname = prompt("First name:");
+                var lname = prompt("Last name:");
+                var name = fname + lname;
                 console.log("nodeData: " + nodeData);
         
                 $.post("@Url.Action("AddAccount")", { pid: nodeData.pid, name: name })
                     .done(function (result) {
-                        sender.add({ id: result.id, pid: nodeData.pid });
+                        sender.add({ id: result.id, pid: nodeData.pid, displayName: result.displayName });
                         sender.draw(OrgChart.action.update, null, function () {
                             sender.editUI.show(result.id);
                         })
@@ -338,7 +340,7 @@ public EmptyResult UpdateUser(User user)
                 userPrin.SamAccountName = user.SamAccountName;
             }
 
-            userPrin.DisplayName = user.DisplayName;          
+         
             userPrin.Title = user.JobTitle;
             userPrin.TelephoneNumber = user.Phone;
             userPrin.Company = user.Company;
@@ -453,6 +455,7 @@ public EmptyResult UpdateUser(User user)
         {
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             var up = new UserPrincipal(ctx, name, "tempP@ssword", true);
+	    up.DisplayName = name;
             up.Save();
 
             UserPrincipal userPrin = new UserPrincipal(ctx);
