@@ -312,9 +312,9 @@ public ActionResult OrgChart()
                 var fname = prompt("First name:");
                 var lname = prompt("Last name:");
                 var name = fname + lname;
-                console.log("nodeData: " + nodeData);
-        
-                $.post("@Url.Action("AddAccount")", { pid: nodeData.pid, name: name })
+                var displayName = fname + " " + lname;
+
+                $.post("@Url.Action("AddAccount")", { pid: nodeData.pid, name: name, displayName: displayName })
                     .done(function (result) {
                         sender.add({ id: result.id, pid: nodeData.pid, displayName: result.displayName });
                         sender.draw(OrgChart.action.update, null, function () {
@@ -451,11 +451,11 @@ public EmptyResult UpdateUser(User user)
         }
 
 
-        public JsonResult AddAccount(string pid, string name)
+         public JsonResult AddAccount(string pid, string name, string displayName)
         {
             var ctx = new PrincipalContext(ContextType.Domain, "ad.balkangraph.com", "OU=TestOU,DC=ad,DC=balkangraph,DC=com");
             var up = new UserPrincipal(ctx, name, "tempP@ssword", true);
-	    up.DisplayName = name;
+	    up.DisplayName = displayName;
             up.Save();
 
             UserPrincipal userPrin = new UserPrincipal(ctx);
